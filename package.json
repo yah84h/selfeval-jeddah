@@ -1,0 +1,53 @@
+{
+  "name": "selfeval-jeddah",
+  "productName": "SelfEval Jeddah",
+  "version": "1.0.0",
+  "description": "دليل التقويم الذاتي المدرسي - تطبيق سطح مكتب يحفظ شواهد المدرسة محليًا",
+  "main": "./out/main/index.js",
+  "author": "Gifted Technical Secondary School - Jeddah",
+  "license": "UNLICENSED",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "electron-vite dev",
+    "build": "electron-vite build",
+    "preview": "electron-vite preview",
+    "typecheck": "tsc --noEmit -p tsconfig.node.json && tsc --noEmit -p tsconfig.web.json",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "dist": "npm run build && electron-builder",
+    "dist:win": "npm run build && electron-builder --win",
+    "dist:mac": "npm run build && electron-builder --mac",
+    "release": "npm run build && electron-builder --publish always",
+    "test:e2e": "node tests/e2e/smoke.mjs"
+  },
+  "dependencies": {
+    "adm-zip": "^0.5.16",
+    "electron-updater": "^6.6.0",
+    "sql.js": "^1.13.0",
+    "zod": "^4.1.0"
+  },
+  "devDependencies": {
+    "@fontsource/tajawal": "^5.2.0",
+    "@tailwindcss/vite": "^4.1.14",
+    "@tanstack/react-query": "^5.90.0",
+    "@types/adm-zip": "^0.5.7",
+    "@types/node": "^22.18.0",
+    "@types/react": "^19.2.0",
+    "@types/react-dom": "^19.2.0",
+    "@types/sql.js": "^1.4.9",
+    "@vitejs/plugin-react": "^5.0.0",
+    "electron": "^42.0.0",
+    "electron-builder": "^26.0.0",
+    "electron-vite": "^5.0.0",
+    "lucide-react": "^1.0.0",
+    "playwright": "^1.64.1",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "sonner": "^2.0.7",
+    "tailwindcss": "^4.1.14",
+    "typescript": "^5.9.0",
+    "vite": "^7.1.0",
+    "vitest": "^4.0.0"
+  }
+}

@@ -1,0 +1,58 @@
+@import "tailwindcss";
+@import "@fontsource/tajawal/400.css";
+@import "@fontsource/tajawal/500.css";
+@import "@fontsource/tajawal/700.css";
+@import "@fontsource/tajawal/800.css";
+
+/* الهوية البصرية: بنفسجي للمجالات، فيروزي للمعايير، أزرق للمؤشرات (نفس هوية النسخة الأصلية) */
+@theme {
+  --font-sans: "Tajawal", "Segoe UI", Arial, sans-serif;
+  --color-primary: #4b20b8;
+  --color-primary-600: #5a2bd1;
+  --color-primary-soft: #f4f0ff;
+  --color-primary-line: #dcd2f5;
+  --color-teal: #08aaa5;
+  --color-teal-soft: #eafbf9;
+  --color-blue: #3b82f6;
+  --color-blue-soft: #eef4ff;
+  --color-ink: #29233c;
+  --color-muted: #716b82;
+  --color-paper: #fcfbff;
+  --color-line: #e5e0ee;
+  --color-success: #0f9d6e;
+  --color-success-soft: #e6f8f1;
+  --color-danger: #d1364f;
+  --color-danger-soft: #fdeef1;
+  --color-warn: #c77d05;
+  --color-warn-soft: #fff6e5;
+  --shadow-card: 0 10px 30px rgba(53, 31, 115, 0.07);
+  --radius-xl: 1rem;
+}
+
+* { box-sizing: border-box; }
+html, body, #root { height: 100%; }
+body { margin: 0; background: var(--color-paper); color: var(--color-ink); font-family: var(--font-sans); -webkit-font-smoothing: antialiased; }
+button, input, select, textarea { font: inherit; }
+button:not(:disabled) { cursor: pointer; }
+::selection { background: var(--color-primary-soft); }
+
+/* شريط التمرير */
+*::-webkit-scrollbar { width: 10px; height: 10px; }
+*::-webkit-scrollbar-thumb { background: #d9d3e8; border-radius: 999px; border: 2px solid var(--color-paper); }
+*::-webkit-scrollbar-track { background: transparent; }
+
+/* حلقة الإنجاز */
+.progress-ring { background: conic-gradient(var(--color-teal) var(--progress, 0%), #ebe7f5 0); }
+
+/* سحب وإفلات */
+.drop-active { outline: 2px dashed var(--color-teal); outline-offset: 2px; background: var(--color-teal-soft); }
+
+/* الطباعة: يُطبع التقرير فقط */
+@media print {
+  @page { size: A4; margin: 12mm; }
+  body { background: #fff; }
+  .no-print { display: none !important; }
+  .print-root { position: static !important; overflow: visible !important; height: auto !important; }
+  .print-area { display: block !important; }
+  .report-domain { break-inside: avoid; }
+}

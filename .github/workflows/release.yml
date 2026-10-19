@@ -1,0 +1,55 @@
+# بناء المثبِّتات ونشرها على GitHub Releases عند دفع وسم إصدار (مثل v1.0.1)
+# الناتج: مثبِّت Windows (NSIS) + DMG/ZIP لماك (Intel + Apple Silicon) + ملفات latest*.yml التي يقرأها زر «التحقق من التحديثات»
+name: Release
+
+on:
+  push:
+    tags: ['v*.*.*']
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm }
+      - run: npm ci --legacy-peer-deps
+      - run: npm run typecheck
+      - run: npm test
+
+  build:
+    needs: test
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            target: --win
+          - os: macos-latest
+            target: --mac
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm }
+      - run: npm ci --legacy-peer-deps
+      - name: Build & publish
+        run: npm run build && npx electron-builder ${{ matrix.target }} --publish always
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # ماك: بدون توقيع حتى توفر شهادة Apple Developer (انظر docs/release-guide-ar.md)
+          CSC_IDENTITY_AUTO_DISCOVERY: false
+      - uses: actions/upload-artifact@v4
+        with:
+          name: installers-${{ matrix.os }}
+          path: |
+            release/**/*.exe
+            release/**/*.dmg
+            release/**/*.zip
+            release/**/*.yml
+            release/**/*.blockmap
+          if-no-files-found: ignore
