@@ -1,7 +1,7 @@
 {
   "name": "selfeval-jeddah",
   "productName": "SelfEval Jeddah",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "دليل التقويم الذاتي المدرسي - تطبيق سطح مكتب يحفظ شواهد المدرسة محليًا",
   "main": "./out/main/index.js",
   "author": "Gifted Technical Secondary School - Jeddah",
