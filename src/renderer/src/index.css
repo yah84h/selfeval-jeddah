@@ -17,7 +17,10 @@
   --color-blue-soft: #eef4ff;
   --color-ink: #29233c;
   --color-muted: #716b82;
-  --color-paper: #fcfbff;
+  --color-paper: #f5f2fc;
+  --color-lavender: #ece6fa;
+  --color-mint: #c8f3ef;
+  --color-mint-strong: #9fe9e5;
   --color-line: #e5e0ee;
   --color-success: #0f9d6e;
   --color-success-soft: #e6f8f1;
@@ -25,8 +28,10 @@
   --color-danger-soft: #fdeef1;
   --color-warn: #c77d05;
   --color-warn-soft: #fff6e5;
-  --shadow-card: 0 10px 30px rgba(53, 31, 115, 0.07);
+  --shadow-card: 0 8px 28px rgba(53, 31, 115, 0.06);
+  --color-surface: #ffffff;
   --radius-xl: 1rem;
+  --radius-2xl: 1.25rem;
 }
 
 * { box-sizing: border-box; }
@@ -56,3 +61,7 @@ button:not(:disabled) { cursor: pointer; }
   .print-area { display: block !important; }
   .report-domain { break-inside: avoid; }
 }
+
+/* خط إنجاز رفيع أسفل البطاقات */
+.stat-line { height: 4px; border-radius: 999px; background: #ebe7f5; overflow: hidden; }
+.stat-line > i { display: block; height: 100%; border-radius: 999px; }

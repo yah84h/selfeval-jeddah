@@ -1,7 +1,7 @@
 import { useState } from 'react'
-import { CheckCircle2, Download, FolderOpen, LockKeyhole, RefreshCw, RotateCw, School, ShieldAlert, Wrench } from 'lucide-react'
+import { CheckCircle2, Download, Eye, EyeOff, FolderOpen, LockKeyhole, RefreshCw, RotateCw, School, ShieldAlert, Wrench } from 'lucide-react'
 import { toast } from 'sonner'
-import { useAppInfo, useSchool, useSettings, useUpdateStatus, keys } from '@/lib/queries'
+import { useAppInfo, useProgress, useSchool, useSettings, useUpdateStatus, keys } from '@/lib/queries'
 import { api, errorMessage } from '@/lib/api'
 import { useQueryClient } from '@tanstack/react-query'
 import { useDialogs } from '@/components/ui/DialogProvider'
@@ -18,6 +18,7 @@ export function SettingsPage() {
         <SchoolCard />
         <BackupSettingsCard />
         <PinCard />
+        <ExcludedCard />
         <MaintenanceCard />
       </div>
     </>
@@ -138,6 +139,29 @@ function PinCard() {
         <Button variant="secondary" size="sm" onClick={setPin}>{enabled ? 'تغيير الرمز' : 'تفعيل الرمز'}</Button>
         {enabled && <Button variant="danger" size="sm" onClick={clearPin}>إزالة الرمز</Button>}
       </div>
+    </Card>
+  )
+}
+
+function ExcludedCard() {
+  const progress = useProgress()
+  const items = (progress.data?.domains ?? []).flatMap(d => d.criteria.flatMap(c => c.indicators.flatMap(i => i.witnesses.filter(w => w.excluded).map(w => ({ code: i.code, text: i.text, w })))))
+  const restore = async (code: string, name: string): Promise<void> => { try { await api.witness.include({ indicatorCode: code, originalName: name }); toast.success('أُعيد تفعيل الشاهد') } catch (e) { toast.error(errorMessage(e)) } }
+  return (
+    <Card className="col-span-2 p-5">
+      <h3 className="mb-1 flex items-center gap-2 text-base font-extrabold"><EyeOff size={18} className="text-warn" /> الشواهد المستبعدة («لا ينطبق») <span className="rounded-full bg-warn-soft px-2 text-xs text-warn">{items.length}</span></h3>
+      <p className="mb-3 text-sm leading-7 text-muted">شواهد قررت المدرسة أنها لا تنطبق عليها؛ لا تُحسب في نسبة الإنجاز وتظهر في التقرير بعلامة «لا ينطبق». تُستبعد من صفحة «المجالات والمعايير» بزر <EyeOff size={12} className="inline" /> بجوار الشاهد.</p>
+      {items.length === 0 ? <p className="text-sm text-muted">لا توجد شواهد مستبعدة.</p> : (
+        <ul className="divide-y divide-line rounded-xl border border-line">
+          {items.map(({ code, text, w }) => (
+            <li key={`${code}-${w.name}`} className="flex items-center gap-3 px-4 py-2.5 text-sm">
+              <code className="rounded-md bg-blue-soft px-1.5 text-[11px] font-bold text-blue">{code}</code>
+              <div className="min-w-0 flex-1"><div className="truncate font-bold">{w.displayName}</div><div className="truncate text-[11px] text-muted">{text}{w.excludeReason ? ` · السبب: ${w.excludeReason}` : ''}</div></div>
+              <Button size="sm" variant="outline" onClick={() => restore(code, w.name)}><Eye size={13} /> تفعيل</Button>
+            </li>
+          ))}
+        </ul>
+      )}
     </Card>
   )
 }

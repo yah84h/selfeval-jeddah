@@ -1,9 +1,10 @@
 // المصدر الوحيد لحساب الإنجاز (يستخدمه لوحة التحكم، شجرة المؤشرات، والتقرير)
 import type { Database } from '../db/database'
-import type { ProgressReport, WitnessProgress, Evidence, CustomWitness, WitnessLabel } from '@shared/types'
+import type { ProgressReport, WitnessProgress, Evidence, CustomWitness, WitnessLabel, WitnessExclusion } from '@shared/types'
 import { domains } from '@shared/evaluationData'
 
-export function computeProgress(evidence: Evidence[], custom: CustomWitness[], labels: WitnessLabel[]): ProgressReport {
+export function computeProgress(evidence: Evidence[], custom: CustomWitness[], labels: WitnessLabel[], exclusions: WitnessExclusion[] = []): ProgressReport {
+  const exclusionMap = new Map(exclusions.map(e => [`${e.indicatorCode}::${e.originalName}`, e.reason]))
   const labelMap = new Map(labels.map(l => [`${l.indicatorCode}::${l.originalName}`, l.displayName]))
   const filesByKey = new Map<string, Evidence[]>()
   for (const file of evidence) {
@@ -18,6 +19,13 @@ export function computeProgress(evidence: Evidence[], custom: CustomWitness[], l
   }
 
   const missing: ProgressReport['missing'] = []
+  // إعادة الترقيم: (1-4-1-3) ← نفس البادئة مع رقم تسلسلي للمؤشرات غير المستبعدة فقط
+  const renumber = (code: string, seq: number): string => {
+    const inner = code.replace(/^\(|\)$/g, '')
+    const parts = inner.split('-')
+    parts[parts.length - 1] = String(seq)
+    return `(${parts.join('-')})`
+  }
   let total = 0
   let completed = 0
 
@@ -27,21 +35,32 @@ export function computeProgress(evidence: Evidence[], custom: CustomWitness[], l
     const criteria = domain.criteria.map(criterion => {
       let criterionTotal = 0
       let criterionCompleted = 0
+      let seq = 0
       const indicators = criterion.indicators.map(indicator => {
+        const requiredExcluded = indicator.requiredDocuments.filter(name => exclusionMap.has(`${indicator.code}::${name}`)).length
+        const notApplicable = indicator.requiredDocuments.length > 0 && requiredExcluded === indicator.requiredDocuments.length
+        const displayCode = notApplicable ? indicator.code : renumber(indicator.code, ++seq)
         const makeWitness = (name: string, isCustom: boolean, customId?: number): WitnessProgress => {
           const files = filesByKey.get(`${indicator.code}::${name}`) ?? []
           const complete = files.length > 0
-          if (!complete) missing.push({ indicatorCode: indicator.code, indicatorText: indicator.text, witnessName: labelMap.get(`${indicator.code}::${name}`) ?? name, domainId: domain.id })
-          return { name, displayName: labelMap.get(`${indicator.code}::${name}`) ?? name, isCustom, customId, files, complete }
+          const key = `${indicator.code}::${name}`
+          if (!isCustom && exclusionMap.has(key)) {
+            return { name, displayName: labelMap.get(key) ?? name, isCustom, customId, files, complete, excluded: true, excludeReason: exclusionMap.get(key) ?? '' }
+          }
+          if (!complete) missing.push({ indicatorCode: indicator.code, displayCode, indicatorText: indicator.text, witnessName: labelMap.get(`${indicator.code}::${name}`) ?? name, domainId: domain.id })
+          return { name, displayName: labelMap.get(key) ?? name, isCustom, customId, files, complete, excluded: false }
         }
         const witnesses = [
           ...indicator.requiredDocuments.map(name => makeWitness(name, false)),
           ...(customByCode.get(indicator.code) ?? []).map(c => makeWitness(c.name, true, c.id))
         ]
-        const done = witnesses.filter(w => w.complete).length
-        criterionTotal += witnesses.length
+        // المستبعدة («لا ينطبق») لا تدخل في الإجمالي ولا في المكتمل
+        const active = witnesses.filter(w => !w.excluded)
+        const done = active.filter(w => w.complete).length
+        criterionTotal += active.length
         criterionCompleted += done
-        return { code: indicator.code, text: indicator.text, witnesses, completed: done, total: witnesses.length }
+        const excludeReason = notApplicable ? (exclusionMap.get(`${indicator.code}::${indicator.requiredDocuments[0]}`) ?? '') : ''
+        return { code: indicator.code, displayCode, notApplicable, excludeReason, text: indicator.text, witnesses, completed: done, total: active.length }
       })
       domainTotal += criterionTotal
       domainCompleted += criterionCompleted
@@ -64,9 +83,9 @@ export function computeProgress(evidence: Evidence[], custom: CustomWitness[], l
 
 export function createProgressService(
   _db: Database,
-  deps: { evidence: () => Evidence[]; custom: () => CustomWitness[]; labels: () => WitnessLabel[] }
+  deps: { evidence: () => Evidence[]; custom: () => CustomWitness[]; labels: () => WitnessLabel[]; exclusions: () => WitnessExclusion[] }
 ) {
   return {
-    get(): ProgressReport { return computeProgress(deps.evidence(), deps.custom(), deps.labels()) }
+    get(): ProgressReport { return computeProgress(deps.evidence(), deps.custom(), deps.labels(), deps.exclusions()) }
   }
 }

@@ -108,6 +108,11 @@ export function registerIpc({ container: c, updater, getWindow }: Deps): void {
   })
   handle('witness.rename', input => { c.witness.rename(input.indicatorCode, input.originalName, input.displayName); notify() })
   handle('witness.resetName', input => { c.witness.resetName(input.indicatorCode, input.originalName); notify() })
+  plain('witness.listExcluded', () => c.witness.listExcluded())
+  handle('witness.exclude', input => { c.witness.exclude(input.indicatorCode, input.originalName, input.reason); c.activity.log('witness.exclude', `${input.indicatorCode}: ${input.originalName}`); notify() })
+  handle('witness.include', input => { c.witness.include(input.indicatorCode, input.originalName); c.activity.log('witness.include', `${input.indicatorCode}: ${input.originalName}`); notify() })
+  handle('witness.excludeIndicator', input => { const n = c.witness.excludeIndicator(input.indicatorCode, input.reason); c.activity.log('witness.exclude', `${input.indicatorCode}: المؤشر كاملًا`); notify(); return n })
+  handle('witness.includeIndicator', input => { const n = c.witness.includeIndicator(input.indicatorCode); c.activity.log('witness.include', `${input.indicatorCode}: المؤشر كاملًا`); notify(); return n })
 
   // ----- النسخ الاحتياطي
   plain('backup.create', () => { const b = c.backup.create('manual'); c.activity.log('backup.create', b.fileName); return b })
@@ -150,7 +155,7 @@ export function registerIpc({ container: c, updater, getWindow }: Deps): void {
     const school = c.school.get()?.name ?? 'school'
     const result = await saveDialog({
       title: 'حفظ التقرير PDF',
-      defaultPath: path.join(app.getPath('documents'), `تقرير التقويم الذاتي - ${school}.pdf`),
+      defaultPath: path.join(app.getPath('documents'), `تقرير التقويم المدرسي - ${school}.pdf`),
       filters: [{ name: 'PDF', extensions: ['pdf'] }]
     })
     if (result.canceled || !result.filePath) return null

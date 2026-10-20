@@ -1,7 +1,7 @@
 # إعداد بناء المثبِّت — electron-builder
 # ملاحظة: مجلد بيانات العميل (userData) خارج مجلد التثبيت، فالتحديث لا يلمسه.
 appId: sa.edu.jeddah.selfeval
-productName: دليل التقويم الذاتي المدرسي
+productName: دليل التقويم المدرسي
 artifactName: SelfEval-Jeddah-${version}-${os}-${arch}.${ext}
 copyright: © 1447هـ مدرسة الموهوبين التقنية الثانوية بنين بجدة
 directories:
@@ -11,7 +11,7 @@ files:
   - out/**
   - package.json
   - build/icon.png
-  - "!**/*.map"
+  - '!**/*.map'
 extraResources:
   - from: node_modules/sql.js/dist/sql-wasm.wasm
     to: sql-wasm.wasm
@@ -28,9 +28,9 @@ nsis:
   allowToChangeInstallationDirectory: true
   createDesktopShortcut: true
   createStartMenuShortcut: true
-  shortcutName: دليل التقويم الذاتي المدرسي
-  deleteAppDataOnUninstall: false # لا تُحذف بيانات المدرسة عند إزالة البرنامج
-  language: 1025 # العربية
+  shortcutName: دليل التقويم المدرسي
+  deleteAppDataOnUninstall: false   # لا تُحذف بيانات المدرسة عند إزالة البرنامج
+  language: 1025                    # العربية
   installerLanguages: [ar_SA, en_US]
   artifactName: SelfEval-Jeddah-Setup-${version}.${ext}
 
@@ -43,12 +43,12 @@ mac:
   icon: build/icon.png
   category: public.app-category.education
   hardenedRuntime: false
-  identity: null # بدون توقيع (غيّره عند توفر شهادة Apple)
+  identity: null                    # بدون توقيع (غيّره عند توفر شهادة Apple)
 dmg:
   artifactName: SelfEval-Jeddah-${version}-${arch}.${ext}
 
 publish:
   provider: github
-  owner: yah84h # ← غيّره إلى اسم حسابك/منظمتك على GitHub
-  repo: selfeval-jeddah # ← اسم المستودع
+  owner: YOUR_GITHUB_USERNAME   # ← غيّره إلى اسم حسابك/منظمتك على GitHub
+  repo: selfeval-jeddah          # ← اسم المستودع
   releaseType: release

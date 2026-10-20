@@ -31,7 +31,7 @@ export function OnboardingPage() {
       <section className="relative flex flex-col justify-center bg-gradient-to-br from-primary to-[#7139db] px-14 text-white">
         <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-l from-teal via-[#5fd3cf] to-teal" />
         <Logo size={64} />
-        <h1 className="mt-6 text-4xl font-extrabold leading-snug">دليل التقويم الذاتي <span className="text-[#9fe9e5]">المدرسي</span></h1>
+        <h1 className="mt-6 text-4xl font-extrabold leading-snug">دليل التقويم <span className="text-[#9fe9e5]">المدرسي</span></h1>
         <p className="mt-3 max-w-md text-base leading-8 text-white/85">الدليل الإجرائي للتقويم المدرسي الذاتي للاعتماد المدرسي — نظام مثبَّت على جهاز المدرسة يحفظ شواهدها محليًا ويتابع إنجازها.</p>
         <div className="mt-8 flex gap-6">
           {[['4', 'مجالات'], [String(indicatorCount), 'مؤشرًا'], [String(witnessCount), 'شاهدًا مطلوبًا']].map(([n, l]) => (

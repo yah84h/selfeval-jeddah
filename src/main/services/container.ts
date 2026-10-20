@@ -30,7 +30,7 @@ export async function createContainer(options: ContainerOptions) {
   const witness = createWitnessService(db)
   const evidence = createEvidenceService(db, paths)
   const activity = createActivityService(db)
-  const progress = createProgressService(db, { evidence: () => evidence.list(), custom: () => witness.listCustom(), labels: () => witness.listLabels() })
+  const progress = createProgressService(db, { evidence: () => evidence.list(), custom: () => witness.listCustom(), labels: () => witness.listLabels(), exclusions: () => witness.listExcluded() })
 
   // الخدمات تحمل مرجع db عند الإنشاء؛ عند إعادة الفتح نعيد تركيبها
   const container = {
@@ -56,7 +56,7 @@ export async function createContainer(options: ContainerOptions) {
       evidence: createEvidenceService(db, paths),
       activity: createActivityService(db)
     })
-    container.progress = createProgressService(db, { evidence: () => container.evidence.list(), custom: () => container.witness.listCustom(), labels: () => container.witness.listLabels() })
+    container.progress = createProgressService(db, { evidence: () => container.evidence.list(), custom: () => container.witness.listCustom(), labels: () => container.witness.listLabels(), exclusions: () => container.witness.listExcluded() })
   }
 
   container.backup = createBackupService({

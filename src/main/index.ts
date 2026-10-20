@@ -40,7 +40,7 @@ function createWindow(): BrowserWindow {
     minWidth: 1024,
     minHeight: 680,
     show: false,
-    title: 'دليل التقويم الذاتي المدرسي',
+    title: 'دليل التقويم المدرسي',
     backgroundColor: '#fcfbff',
     autoHideMenuBar: true,
     icon: path.join(__dirname, '../../build/icon.png'),

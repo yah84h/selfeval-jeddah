@@ -61,6 +61,21 @@ export function useEvidenceActions() {
         await run(`custom-${witness.customId}`, async () => { await api.witness.removeCustom(witness.customId!); toast.success('تم حذف الشاهد المخصص') })
       }
     },
+    exclude: async (indicatorCode: string, witness: WitnessProgress) => {
+      const reason = await prompt({ title: 'استبعاد الشاهد — لا ينطبق على المدرسة', label: 'سبب الاستبعاد (اختياري، يظهر في التقرير)', placeholder: 'مثال: لا يوجد مرحلة ابتدائية في المدرسة', confirmText: 'استبعاد' })
+      if (reason === null) return
+      await run(`${indicatorCode}::${witness.name}`, async () => {
+        await api.witness.exclude({ indicatorCode, originalName: witness.name, reason })
+        toast.success('استُبعد الشاهد من الحساب والتقرير' + (witness.files.length ? ' — ملفاته محفوظة ولم تُحذف' : ''))
+      })
+    },
+    include: (indicatorCode: string, witness: WitnessProgress) => run(`${indicatorCode}::${witness.name}`, async () => { await api.witness.include({ indicatorCode, originalName: witness.name }); toast.success('أُعيد تفعيل الشاهد') }),
+    excludeIndicator: async (indicatorCode: string) => {
+      const reason = await prompt({ title: 'استبعاد المؤشر كاملًا — لا ينطبق على المدرسة', label: 'سبب الاستبعاد (اختياري، يظهر في التقرير)', confirmText: 'استبعاد كل شواهد المؤشر' })
+      if (reason === null) return
+      await run(`ind-${indicatorCode}`, async () => { const n = await api.witness.excludeIndicator({ indicatorCode, reason }); toast.success(`استُبعد ${n} شاهد(ات)`) })
+    },
+    includeIndicator: (indicatorCode: string) => run(`ind-${indicatorCode}`, async () => { await api.witness.includeIndicator({ indicatorCode }); toast.success('أُعيد تفعيل شواهد المؤشر') }),
     setNote: async (id: number, current: string) => {
       const note = await prompt({ title: 'ملاحظة على الملف', label: 'ملاحظة تظهر بجوار الملف (اختياري)', defaultValue: current })
       if (note === null) return

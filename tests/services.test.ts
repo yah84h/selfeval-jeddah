@@ -121,6 +121,49 @@ describe('حساب الإنجاز', () => {
   })
 })
 
+describe('الشواهد المستبعدة (لا ينطبق)', () => {
+  it('الاستبعاد يخرج الشاهد من الإجمالي والناقص، والتفعيل يعيده، والمؤشر كاملًا', () => {
+    const ind = allIndicators[3]
+    const before = c.progress.get()
+    c.witness.exclude(ind.code, ind.requiredDocuments[0], 'لا يوجد')
+    const after = c.progress.get()
+    expect(after.total).toBe(before.total - 1)
+    expect(after.missing.length).toBe(before.missing.length - 1)
+    const w = after.domains.flatMap(d => d.criteria).flatMap(cr => cr.indicators).find(i => i.code === ind.code)!.witnesses[0]
+    expect(w.excluded).toBe(true)
+    expect(w.excludeReason).toBe('لا يوجد')
+    c.witness.include(ind.code, ind.requiredDocuments[0])
+    expect(c.progress.get().total).toBe(before.total)
+
+    expect(c.witness.excludeIndicator(ind.code)).toBe(ind.requiredDocuments.length)
+    const p = c.progress.get()
+    expect(p.total).toBe(before.total - ind.requiredDocuments.length)
+    const crit = p.domains.flatMap(d => d.criteria).find(cr => cr.indicators.some(i => i.code === ind.code))!
+    const na = crit.indicators.find(i => i.code === ind.code)!
+    expect(na.total).toBe(0)
+    expect(na.notApplicable).toBe(true)
+    // إعادة الترقيم: المؤشرات المتبقية مرقّمة تسلسليًا بلا فجوة
+    const seqs = crit.indicators.filter(i => !i.notApplicable).map(i => Number(i.displayCode.replace(/^\(|\)$/g, '').split('-').pop()))
+    expect(seqs).toEqual(seqs.map((_, k) => k + 1))
+    c.witness.includeIndicator(ind.code)
+    expect(c.progress.get().total).toBe(before.total)
+    // لا يمكن استبعاد شاهد غير أصلي
+    expect(() => c.witness.exclude(ind.code, 'شاهد وهمي')).toThrow()
+  })
+
+  it('الترحيل من إصدار أقدم (مخطط 1) إلى الحالي يحافظ على البيانات', async () => {
+    // محاكاة قاعدة من الإصدار 1.0.0: نحذف جدول الاستبعاد ونعيد رقم المخطط إلى 1
+    c.evidence.addFromPaths(allIndicators[0].code, allIndicators[0].requiredDocuments[0], [makeFile('old.pdf')])
+    c.db.exec('DROP TABLE witness_exclusion'); c.db.exec('DELETE FROM schema_migrations WHERE version > 1'); c.db.exec('PRAGMA user_version = 1')
+    c.close()
+    c = await boot()
+    expect(c.db.schemaVersion).toBe(c.schemaVersion)
+    expect(c.evidence.list()).toHaveLength(1)
+    c.witness.exclude(allIndicators[0].code, allIndicators[0].requiredDocuments[1])
+    expect(c.witness.listExcluded()).toHaveLength(1)
+  })
+})
+
 describe('النسخ الاحتياطي', () => {
   it('تصدير ← مسح ← استعادة (استبدال) = نفس البيانات', async () => {
     const ind = allIndicators[1]

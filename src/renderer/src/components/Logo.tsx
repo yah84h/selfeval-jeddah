@@ -2,5 +2,5 @@
 import logoUrl from '@/assets/logo.svg'
 
 export function Logo({ size = 40 }: { size?: number }) {
-  return <img src={logoUrl} width={size} height={size} alt="دليل التقويم الذاتي المدرسي" className="shrink-0 rounded-xl" />
+  return <img src={logoUrl} width={size} height={size} alt="دليل التقويم المدرسي" className="shrink-0 rounded-xl" />
 }

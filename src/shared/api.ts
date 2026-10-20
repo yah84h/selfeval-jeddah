@@ -2,7 +2,7 @@
 import type { Input } from './ipc'
 import type {
   ActivityEntry, AppInfo, AppSettings, BackupInfo, BackupManifest, Evidence, ProgressReport,
-  RestoreResult, School, UpdateStatus, CustomWitness, WitnessLabel
+  RestoreResult, School, UpdateStatus, CustomWitness, WitnessLabel, WitnessExclusion
 } from './types'
 
 export type AddFilesResult = { added: Evidence[]; errors: Array<{ file: string; error: string }> }
@@ -40,6 +40,11 @@ export interface Api {
     removeCustom(id: number): Promise<void>
     rename(input: Input<'witness.rename'>): Promise<void>
     resetName(input: Input<'witness.resetName'>): Promise<void>
+    listExcluded(): Promise<WitnessExclusion[]>
+    exclude(input: Input<'witness.exclude'>): Promise<void>
+    include(input: Input<'witness.include'>): Promise<void>
+    excludeIndicator(input: Input<'witness.excludeIndicator'>): Promise<number>
+    includeIndicator(input: Input<'witness.includeIndicator'>): Promise<number>
   }
   backup: {
     create(): Promise<BackupInfo>

@@ -156,6 +156,11 @@ export function createBackupService(ctx: BackupContext) {
             const exists = db.get('SELECT id FROM witness_label WHERE indicator_code = ? AND original_name = ?', [row.indicator_code, row.original_name])
             if (!exists) { db.run('INSERT INTO witness_label (indicator_code, original_name, display_name, updated_at) VALUES (?, ?, ?, ?)', [row.indicator_code, row.original_name, row.display_name, row.updated_at]); result.updatedLabels++ }
           }
+          // الاستبعادات («لا ينطبق»): تُضاف الناقصة فقط
+          for (const row of source.all<{ indicator_code: string; original_name: string; reason: string; created_at: string }>("SELECT * FROM witness_exclusion")) {
+            const exists = db.get('SELECT id FROM witness_exclusion WHERE indicator_code = ? AND original_name = ?', [row.indicator_code, row.original_name])
+            if (!exists) db.run('INSERT INTO witness_exclusion (indicator_code, original_name, reason, created_at) VALUES (?, ?, ?, ?)', [row.indicator_code, row.original_name, row.reason ?? '', row.created_at])
+          }
           // الملفات: يُضاف ما لا يوجد له مطابق (نفس المؤشر والشاهد واسم الملف والحجم)
           type SrcRow = { indicator_code: string; witness_name: string; file_name: string; stored_name: string; mime_type: string; file_size: number; note: string; created_at: string }
           for (const row of source.all<SrcRow>('SELECT * FROM evidence WHERE deleted_at IS NULL')) {

@@ -43,7 +43,12 @@ const api: Api = {
     addCustom: input => invoke('witness.addCustom', input),
     removeCustom: id => invoke('witness.removeCustom', { id }),
     rename: input => invoke('witness.rename', input),
-    resetName: input => invoke('witness.resetName', input)
+    resetName: input => invoke('witness.resetName', input),
+    listExcluded: () => invoke('witness.listExcluded'),
+    exclude: input => invoke('witness.exclude', input),
+    include: input => invoke('witness.include', input),
+    excludeIndicator: input => invoke('witness.excludeIndicator', input),
+    includeIndicator: input => invoke('witness.includeIndicator', input)
   },
   backup: {
     create: () => invoke('backup.create'),

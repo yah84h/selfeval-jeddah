@@ -58,6 +58,21 @@ export const migrations: Migration[] = [
         created_at TEXT NOT NULL
       )`
     ]
+  },
+  {
+    version: 2,
+    name: 'witness-exclusion',
+    up: [
+      // الشواهد التي قررت المدرسة أنها «لا تنطبق» عليها — تُستبعد من الحساب والتقرير ويمكن إعادة تفعيلها
+      `CREATE TABLE IF NOT EXISTS witness_exclusion (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        indicator_code TEXT NOT NULL,
+        original_name TEXT NOT NULL,
+        reason TEXT NOT NULL DEFAULT '',
+        created_at TEXT NOT NULL,
+        UNIQUE (indicator_code, original_name)
+      )`
+    ]
   }
   // مثال لترحيلة مستقبلية:
   // { version: 2, name: 'evidence-tags', up: ['ALTER TABLE evidence ADD COLUMN tags TEXT NOT NULL DEFAULT ""'] }

@@ -1,73 +1,189 @@
-import type { ReactNode } from 'react'
-import { BookOpen, Database, Download, FolderOpen, LayoutDashboard, Layers3, Printer, School, Settings, Trash2 } from 'lucide-react'
-import type { PageId } from './navigation'
-import { useAppInfo, useProgress, useSchool, useTrash, useUpdateStatus } from '@/lib/queries'
-import { Logo } from '@/components/Logo'
+import type { ReactNode } from "react";
+import {
+  CheckCircle2,
+  Database,
+  Download,
+  FolderOpen,
+  Info,
+  LayoutDashboard,
+  Layers3,
+  Printer,
+  Settings,
+  Trash2,
+} from "lucide-react";
+import type { PageId } from "./navigation";
+import {
+  useAppInfo,
+  useProgress,
+  useSchool,
+  useTrash,
+  useUpdateStatus,
+} from "@/lib/queries";
+import { Logo } from "@/components/Logo";
 
-const items: Array<{ id: PageId; label: string; icon: ReactNode; hint?: string }> = [
-  { id: 'dashboard', label: 'لوحة التحكم', icon: <LayoutDashboard size={18} /> },
-  { id: 'standards', label: 'المجالات والمعايير', icon: <Layers3 size={18} />, hint: 'رفع الشواهد' },
-  { id: 'report', label: 'تقرير الإنجاز', icon: <Printer size={18} /> },
-  { id: 'trash', label: 'سلة المحذوفات', icon: <Trash2 size={18} /> },
-  { id: 'backup', label: 'النسخ الاحتياطي', icon: <Database size={18} /> },
-  { id: 'settings', label: 'الإعدادات والتحديث', icon: <Settings size={18} /> },
-  { id: 'about', label: 'عن الدليل', icon: <BookOpen size={18} /> }
-]
+const items: Array<{ id: PageId; label: string; icon: ReactNode }> = [
+  {
+    id: "dashboard",
+    label: "الرئيسية والإحصائيات",
+    icon: <LayoutDashboard size={17} />,
+  },
+  { id: "standards", label: "المجالات والمعايير", icon: <Layers3 size={17} /> },
+  {
+    id: "report",
+    label: "تقرير الإنجاز والطباعة",
+    icon: <Printer size={17} />,
+  },
+  { id: "trash", label: "سلة المحذوفات", icon: <Trash2 size={17} /> },
+  {
+    id: "backup",
+    label: "النسخ الاحتياطي والاستعادة",
+    icon: <Database size={17} />,
+  },
+  { id: "settings", label: "الإعدادات والتحديث", icon: <Settings size={17} /> },
+  { id: "about", label: "عن الدليل", icon: <Info size={17} /> },
+];
 
-export function Shell({ page, onNavigate, children }: { page: PageId; onNavigate: (p: PageId) => void; children: ReactNode }) {
-  const school = useSchool()
-  const info = useAppInfo()
-  const progress = useProgress()
-  const trash = useTrash()
-  const update = useUpdateStatus()
-  const updateReady = update.data?.state === 'available' || update.data?.state === 'downloaded'
+export function Shell({
+  page,
+  onNavigate,
+  children,
+}: {
+  page: PageId;
+  onNavigate: (p: PageId) => void;
+  children: ReactNode;
+}) {
+  const school = useSchool();
+  const info = useAppInfo();
+  const progress = useProgress();
+  const trash = useTrash();
+  const update = useUpdateStatus();
+  const updateReady =
+    update.data?.state === "available" || update.data?.state === "downloaded";
+  const p = progress.data;
 
   return (
-    <div className="print-root flex h-full overflow-hidden">
-      <aside className="no-print flex w-[268px] shrink-0 flex-col border-l border-line bg-white">
-        <div className="flex items-center gap-3 border-b border-line px-5 py-4">
-          <Logo size={44} />
+    <div className="print-root flex h-full gap-4 overflow-hidden bg-paper p-4">
+      <aside className="no-print flex w-[272px] shrink-0 flex-col gap-3">
+        {/* الشعار */}
+        <div className="flex items-center gap-3 rounded-2xl border border-line bg-white px-4 py-3.5 shadow-card">
+          <Logo size={42} />
           <div className="min-w-0">
-            <div className="truncate text-sm font-extrabold text-ink">دليل التقويم الذاتي</div>
-            <div className="truncate text-[11px] font-semibold text-muted">المدرسي — تعليم جدة</div>
+            <div className="truncate text-[15px] font-extrabold text-ink">
+              دليل التقويم المدرسي
+            </div>
+            <div className="truncate text-[11px] font-semibold text-muted">
+              الإدارة العامة للتعليم بجدة
+            </div>
           </div>
         </div>
 
-        <div className="mx-4 mt-4 rounded-xl bg-primary-soft px-3.5 py-3">
-          <div className="flex items-center gap-2 text-primary"><School size={16} /><span className="truncate text-sm font-extrabold">{school.data?.name ?? 'ملف المدرسة'}</span></div>
-          <div className="mt-2 flex items-center justify-between text-[12px] font-semibold text-muted">
-            <span>الإنجاز</span><span className="text-teal">{progress.data?.percent ?? 0}%</span>
+        {/* بطاقة المدرسة والإنجاز */}
+        <div className="rounded-2xl border border-line bg-white px-4 py-3.5 shadow-card">
+          <div className="flex items-start justify-between gap-2">
+            <div className="min-w-0">
+              <div className="text-sm font-extrabold leading-6 text-ink">
+                {school.data?.name ?? "ملف المدرسة"}
+              </div>
+              <div className="text-[11px] text-muted">
+                الرقم الوزاري المعتمد
+              </div>
+            </div>
+            {school.data?.ministryNumber && (
+              <span
+                className="rounded-lg bg-paper px-2 py-1 font-mono text-[11px] font-bold text-ink"
+                dir="ltr"
+              >
+                {school.data.ministryNumber}
+              </span>
+            )}
           </div>
-          <div className="mt-1 h-1.5 overflow-hidden rounded-full bg-white"><div className="h-full rounded-full bg-teal transition-all" style={{ width: `${progress.data?.percent ?? 0}%` }} /></div>
+          <div className="mt-3 flex items-center justify-between text-[11.5px] font-semibold text-muted">
+            <span>نسبة اكتمال الشواهد</span>
+            <span className="text-sm font-extrabold text-ink">
+              {p?.percent ?? 0}%
+            </span>
+          </div>
+          <div className="stat-line mt-1.5">
+            <i
+              style={{
+                width: `${p?.percent ?? 0}%`,
+                background: "linear-gradient(90deg,#08aaa5,#4b20b8)",
+              }}
+            />
+          </div>
+          <div className="mt-1.5 flex items-center gap-1 text-[11px] text-muted">
+            <CheckCircle2 size={12} className="text-teal" /> {p?.completed ?? 0}{" "}
+            موثق من {p?.total ?? 0} شاهد
+          </div>
         </div>
 
-        <nav className="mt-4 flex-1 space-y-1 px-3">
-          {items.map(item => {
-            const active = item.id === page
-            const badge = item.id === 'trash' ? trash.data?.length : item.id === 'settings' && updateReady ? '●' : undefined
+        {/* التنقل */}
+        <nav className="flex-1 space-y-0.5 rounded-2xl border border-line bg-white p-2 shadow-card">
+          {items.map((item) => {
+            const active = item.id === page;
+            const badge =
+              item.id === "standards"
+                ? `${p?.domains.length ?? 4} مجالات`
+                : item.id === "trash" && trash.data?.length
+                  ? String(trash.data.length)
+                  : item.id === "settings" && updateReady
+                    ? "تحديث"
+                    : null;
             return (
-              <button key={item.id} onClick={() => onNavigate(item.id)}
-                className={`flex w-full items-center gap-3 rounded-xl px-3.5 py-2.5 text-sm font-bold transition-colors ${active ? 'bg-primary text-white shadow-sm' : 'text-ink hover:bg-primary-soft hover:text-primary'}`}>
-                <span className={active ? 'text-white' : 'text-muted'}>{item.icon}</span>
+              <button
+                key={item.id}
+                onClick={() => onNavigate(item.id)}
+                className={`flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-[13.5px] font-bold transition-colors ${active ? "bg-lavender text-primary" : "text-muted hover:bg-paper hover:text-ink"}`}
+              >
+                <span className={active ? "text-primary" : "text-muted"}>
+                  {item.icon}
+                </span>
                 <span className="flex-1 text-right">{item.label}</span>
-                {badge ? <span className={`rounded-full px-2 text-[11px] ${active ? 'bg-white/20 text-white' : item.id === 'settings' ? 'text-teal' : 'bg-primary-soft text-primary'}`}>{badge}</span> : null}
+                {badge && (
+                  <span
+                    className={`rounded-full px-2 py-0.5 text-[10.5px] ${active ? "bg-white text-primary" : item.id === "settings" ? "bg-mint text-[#0b6f6b]" : "bg-lavender text-primary"}`}
+                  >
+                    {badge}
+                  </span>
+                )}
+                {active && <span className="absolute" />}
               </button>
-            )
+            );
           })}
         </nav>
 
-        <div className="border-t border-line px-4 py-3 text-[11px] text-muted">
-          <div className="flex items-center justify-between">
-            <span>الإصدار {info.data?.version ?? '…'}</span>
-            <button className="flex items-center gap-1 font-bold text-primary hover:underline" onClick={() => window.api.app.openDataDir()}><FolderOpen size={13} /> مجلد البيانات</button>
+        {/* التذييل: مسار البيانات والإصدار */}
+        <div className="rounded-2xl border border-line bg-white px-4 py-3 shadow-card">
+          <button
+            onClick={() => window.api.app.openDataDir()}
+            title={info.data?.dataDir}
+            className="flex w-full items-center gap-2 rounded-lg bg-paper px-2.5 py-1.5 text-[11px] font-bold text-ink hover:bg-lavender"
+          >
+            <FolderOpen size={13} className="shrink-0 text-primary" />
+            <span className="truncate font-mono" dir="ltr">
+              {info.data?.dataDir ?? "…"}
+            </span>
+          </button>
+          <div className="mt-2 flex items-center justify-between text-[11px] text-muted">
+            <span>v{info.data?.version ?? "…"} (محلي بالكامل)</span>
+            <span className="flex items-center gap-1">
+              <i className="h-2 w-2 rounded-full bg-success" /> متصل محليًا
+            </span>
           </div>
-          {updateReady && <button onClick={() => onNavigate('settings')} className="mt-2 flex w-full items-center justify-center gap-1 rounded-lg bg-teal-soft py-1.5 font-bold text-teal"><Download size={13} /> تحديث جديد متاح</button>}
+          {updateReady && (
+            <button
+              onClick={() => onNavigate("settings")}
+              className="mt-2 flex w-full items-center justify-center gap-1 rounded-lg bg-mint py-1.5 text-[11.5px] font-bold text-[#0b6f6b]"
+            >
+              <Download size={13} /> تحديث جديد متاح
+            </button>
+          )}
         </div>
       </aside>
 
-      <main className="min-w-0 flex-1 overflow-auto">
-        <div className="mx-auto max-w-[1180px] px-8 py-7">{children}</div>
+      <main className="min-w-0 flex-1 overflow-auto rounded-2xl">
+        <div className="mx-auto max-w-[1180px] px-2 py-2">{children}</div>
       </main>
     </div>
-  )
+  );
 }

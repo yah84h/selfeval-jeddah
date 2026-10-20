@@ -40,7 +40,7 @@ const steps = [
 export function AboutPage({ onNavigate }: { onNavigate: (t: NavTarget) => void }) {
   return (
     <>
-      <SectionHeading eyebrow="دليل شامل للتقويم الذاتي" title="دليل التقويم الذاتي المدرسي" description="الدليل الإجرائي للتقويم المدرسي الذاتي للاعتماد المدرسي — المعايير والمؤشرات والأدوات اللازمة لتطبيق التقويم الذاتي."
+      <SectionHeading eyebrow="دليل شامل للتقويم الذاتي" title="دليل التقويم المدرسي" description="الدليل الإجرائي للتقويم المدرسي الذاتي للاعتماد المدرسي — المعايير والمؤشرات والأدوات اللازمة لتطبيق التقويم الذاتي."
         action={<Button variant="teal" onClick={() => onNavigate({ page: 'standards' })}>ابدأ الاستكشاف <ArrowLeft size={16} /></Button>} />
 
       <Card className="mb-6 bg-gradient-to-l from-primary to-[#7139db] p-6 text-white">

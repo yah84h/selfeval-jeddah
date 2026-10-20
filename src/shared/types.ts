@@ -36,6 +36,12 @@ export type WitnessLabel = {
   displayName: string
 }
 
+export type WitnessExclusion = {
+  indicatorCode: string
+  originalName: string
+  reason: string
+}
+
 export type WitnessProgress = {
   name: string
   displayName: string
@@ -43,10 +49,19 @@ export type WitnessProgress = {
   customId?: number
   files: Evidence[]
   complete: boolean
+  /** «لا ينطبق»: مستبعد من الحساب والتقرير */
+  excluded: boolean
+  excludeReason?: string
 }
 
 export type IndicatorProgress = {
+  /** الرمز الأصلي في الدليل، مثل (1-4-1-3) */
   code: string
+  /** الرمز المعروض بعد إعادة الترقيم (يتخطى المؤشرات المستبعدة) */
+  displayCode: string
+  /** كل شواهده الأصلية مستبعدة ← المؤشر لا ينطبق ويُخفى من القائمة والتقرير */
+  notApplicable: boolean
+  excludeReason: string
   text: string
   witnesses: WitnessProgress[]
   completed: number
@@ -76,7 +91,7 @@ export type ProgressReport = {
   completed: number
   percent: number
   uploadedFiles: number
-  missing: Array<{ indicatorCode: string; indicatorText: string; witnessName: string; domainId: number }>
+  missing: Array<{ indicatorCode: string; displayCode: string; indicatorText: string; witnessName: string; domainId: number }>
 }
 
 export type AppSettings = {

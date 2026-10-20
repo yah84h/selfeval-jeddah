@@ -72,3 +72,45 @@ export function Field({ label, hint, children }: { label: string; hint?: string;
 }
 
 export const inputClass = 'h-11 w-full rounded-xl border border-line bg-white px-3.5 text-sm text-ink outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/15 placeholder:text-muted/70'
+
+/** حبّة حالة ملوّنة (نمط Stitch) */
+export function Pill({ children, tone = 'lavender', className = '' }: { children: ReactNode; tone?: 'lavender' | 'mint' | 'danger' | 'warn' | 'success' | 'primary' | 'muted'; className?: string }) {
+  const tones = {
+    lavender: 'bg-lavender text-primary',
+    primary: 'bg-primary text-white',
+    mint: 'bg-mint text-[#0b6f6b]',
+    success: 'bg-success-soft text-success',
+    danger: 'bg-danger-soft text-danger',
+    warn: 'bg-warn-soft text-warn',
+    muted: 'bg-paper text-muted'
+  }
+  return <span className={`inline-flex items-center gap-1 whitespace-nowrap rounded-full px-2.5 py-1 text-[11.5px] font-bold leading-none ${tones[tone]} ${className}`}>{children}</span>
+}
+
+/** بطاقة إحصاء بخط إنجاز أسفلها (نمط Stitch) */
+export function StatCard({ icon, label, value, sub, tone = 'primary', percent }: { icon: ReactNode; label: string; value: ReactNode; sub?: ReactNode; tone?: 'primary' | 'teal' | 'danger' | 'muted'; percent: number }) {
+  const color = { primary: '#4b20b8', teal: '#08aaa5', danger: '#d1364f', muted: '#716b82' }[tone]
+  const iconBg = { primary: 'bg-lavender text-primary', teal: 'bg-mint text-[#0b6f6b]', danger: 'bg-danger-soft text-danger', muted: 'bg-paper text-muted' }[tone]
+  return (
+    <Card className="flex flex-col gap-3 p-5">
+      <div className="flex items-center justify-between">
+        <span className="text-[12.5px] font-bold text-muted">{label}</span>
+        <span className={`grid h-9 w-9 place-items-center rounded-xl ${iconBg}`}>{icon}</span>
+      </div>
+      <div className="flex items-end gap-2">
+        <span className="text-[34px] font-extrabold leading-none" style={{ color }}>{value}</span>
+        {sub && <span className="pb-1 text-[11.5px] font-semibold text-muted">{sub}</span>}
+      </div>
+      <div className="stat-line"><i style={{ width: `${Math.max(0, Math.min(100, percent))}%`, background: color }} /></div>
+    </Card>
+  )
+}
+
+/** حبّة حالة المجال حسب النسبة */
+export function domainStatus(pct: number): { label: string; tone: 'mint' | 'lavender' | 'warn' | 'danger' } {
+  if (pct >= 85) return { label: 'متقدم جداً', tone: 'mint' }
+  if (pct >= 65) return { label: 'متقدم', tone: 'mint' }
+  if (pct >= 40) return { label: 'قيد الإنجاز', tone: 'lavender' }
+  if (pct > 0) return { label: 'يحتاج متابعة', tone: 'warn' }
+  return { label: 'لم يبدأ', tone: 'danger' }
+}
