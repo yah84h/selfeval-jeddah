@@ -8,7 +8,6 @@ import { fileKind } from '@/lib/format'
 
 export function AnalyticsSection({ p }: { p: ProgressReport }) {
   const criteria = p.domains.flatMap(d => d.criteria.map(c => ({ label: `${c.name} (${c.id})`, value: c.completed, total: c.total, color: DOMAIN_COLORS[d.id], hint: `المجال ${d.id} · ${c.completed} من ${c.total}` })))
-  const excluded = p.domains.flatMap(d => d.criteria).flatMap(c => c.indicators).flatMap(i => i.witnesses).filter(w => w.excluded).length
   const missing = p.total - p.completed
   const allFiles = p.domains.flatMap(d => d.criteria.flatMap(c => c.indicators.flatMap(i => i.witnesses.flatMap(w => w.files))))
 
@@ -56,16 +55,15 @@ export function AnalyticsSection({ p }: { p: ProgressReport }) {
         {/* جاهزية الشواهد */}
         <Card className="flex flex-col p-5">
           <div className="mb-2 flex items-start justify-between">
-            <div className="flex items-center gap-3"><span className="grid h-10 w-10 place-items-center rounded-xl bg-mint text-[#0b6f6b]"><PieChart size={20} /></span><div><h3 className="text-[15px] font-extrabold">جاهزية الشواهد الـ{p.total + excluded}</h3><p className="text-[11.5px] text-muted">توزيع الوثائق حسب حالة التدقيق</p></div></div>
+            <div className="flex items-center gap-3"><span className="grid h-10 w-10 place-items-center rounded-xl bg-mint text-[#0b6f6b]"><PieChart size={20} /></span><div><h3 className="text-[15px] font-extrabold">جاهزية الشواهد الـ{p.total}</h3><p className="text-[11.5px] text-muted">توزيع الوثائق حسب حالة التدقيق</p></div></div>
           </div>
-          <div className="flex flex-1 items-center justify-center"><Donut size={210} thickness={26} centerValue={p.total + excluded} centerLabel="إجمالي الشواهد" parts={[
+          <div className="flex flex-1 items-center justify-center"><Donut size={210} thickness={26} centerValue={p.total} centerLabel="إجمالي الشواهد" parts={[
             { label: 'معتمد', value: p.completed, color: '#1e7f7b' },
-            { label: 'ناقص', value: missing, color: '#c0392b' },
-            { label: 'مستثنى', value: excluded, color: '#2459c9' }
+            { label: 'ناقص', value: missing, color: '#c0392b' }
           ]} /></div>
-          <div className="mt-3 grid grid-cols-3 gap-2">
-            {[{ v: p.completed, l: 'معتمد', c: '#1e7f7b' }, { v: missing, l: 'ناقص', c: '#c0392b' }, { v: excluded, l: 'مستثنى', c: '#2459c9' }].map(t => (
-              <div key={t.l} className="rounded-xl bg-paper px-3 py-2 text-center"><div className="text-lg font-extrabold" style={{ color: t.c }}>{t.v}</div><div className="text-[10.5px] font-bold text-muted">{t.l} <span className="text-muted/70">({p.total + excluded ? Math.round((t.v / (p.total + excluded)) * 100) : 0}%)</span></div></div>
+          <div className="mt-3 grid grid-cols-2 gap-2">
+            {[{ v: p.completed, l: 'معتمد', c: '#1e7f7b' }, { v: missing, l: 'ناقص', c: '#c0392b' }].map(t => (
+              <div key={t.l} className="rounded-xl bg-paper px-3 py-2 text-center"><div className="text-lg font-extrabold" style={{ color: t.c }}>{t.v}</div><div className="text-[10.5px] font-bold text-muted">{t.l} <span className="text-muted/70">({p.total ? Math.round((t.v / p.total) * 100) : 0}%)</span></div></div>
             ))}
           </div>
         </Card>

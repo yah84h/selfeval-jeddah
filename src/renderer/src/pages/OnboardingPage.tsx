@@ -30,7 +30,7 @@ export function OnboardingPage() {
     <div className="grid h-full grid-cols-[1.1fr_1fr] overflow-hidden">
       <section className="relative flex flex-col justify-center bg-gradient-to-br from-primary to-[#7139db] px-14 text-white">
         <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-l from-teal via-[#5fd3cf] to-teal" />
-        <Logo size={64} />
+        <div className="w-fit rounded-2xl bg-white px-5 py-3 shadow-lg"><Logo size={72} /></div>
         <h1 className="mt-6 text-4xl font-extrabold leading-snug">دليل التقويم <span className="text-[#9fe9e5]">المدرسي</span></h1>
         <p className="mt-3 max-w-md text-base leading-8 text-white/85">الدليل الإجرائي للتقويم المدرسي الذاتي للاعتماد المدرسي — نظام مثبَّت على جهاز المدرسة يحفظ شواهدها محليًا ويتابع إنجازها.</p>
         <div className="mt-8 flex gap-6">

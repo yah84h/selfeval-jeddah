@@ -1,4 +1,4 @@
-import { AlertTriangle, ArrowLeft, BookOpen, Clock, Database, EyeOff, Eye, FileCheck2, FileText, FileWarning, FolderOpen, HardDrive, Layers3, Printer, ShieldCheck, Upload } from 'lucide-react'
+import { AlertTriangle, ArrowLeft, BookOpen, Clock, Database, Eye, FileCheck2, FileText, FileWarning, FolderOpen, HardDrive, Layers3, Printer, ShieldCheck, Upload } from 'lucide-react'
 import type { NavTarget } from '@/app/navigation'
 import { useActivity, useProgress, useSchool, useSettings } from '@/lib/queries'
 import { Card, EmptyState, Pill, SectionHeading, StatCard, domainStatus } from '@/components/ui/Card'
@@ -27,7 +27,6 @@ export function DashboardPage({ onNavigate }: { onNavigate: (t: NavTarget) => vo
   const [preview, setPreview] = useState<{ id: number; name: string } | null>(null)
   const p = progress.data
   const missingCount = (p?.total ?? 0) - (p?.completed ?? 0)
-  const excludedCount = p?.domains.flatMap(d => d.criteria).flatMap(c => c.indicators).flatMap(i => i.witnesses).filter(w => w.excluded).length ?? 0
   const allFiles = (p?.domains ?? []).flatMap(d => d.criteria.flatMap(c => c.indicators.flatMap(i => i.witnesses.flatMap(w => w.files.map(f => ({ f, i, w, d }))))))
   const recent = allFiles.sort((a, b) => b.f.createdAt.localeCompare(a.f.createdAt)).slice(0, 6)
 
@@ -44,7 +43,7 @@ export function DashboardPage({ onNavigate }: { onNavigate: (t: NavTarget) => vo
         <StatCard icon={<FileText size={18} />} label="إجمالي الشواهد المطلوبة" value={p?.total ?? 0} sub="شاهد · مستهدف 100%" tone="primary" percent={100} />
         <StatCard icon={<FileCheck2 size={18} />} label="الشواهد المكتملة والمؤرشفة" value={p?.completed ?? 0} sub={<Pill tone="mint">{p?.percent ?? 0}% مكتمل</Pill>} tone="teal" percent={p?.percent ?? 0} />
         <StatCard icon={<FileWarning size={18} />} label="الشواهد الناقصة" value={missingCount} sub={<Pill tone="danger">{p?.total ? Math.round((missingCount / p.total) * 100) : 0}% متأخر</Pill>} tone="danger" percent={p?.total ? (missingCount / p.total) * 100 : 0} />
-        <StatCard icon={<EyeOff size={18} />} label="شواهد مستثناة رسميًا" value={excludedCount} sub="بمحضر معتمد · لا ينطبق" tone="muted" percent={p ? (excludedCount / (p.total + excludedCount || 1)) * 100 : 0} />
+        <StatCard icon={<FolderOpen size={18} />} label="الملفات المرفوعة محليًا" value={p?.uploadedFiles ?? 0} sub={`${formatSize(allFiles.reduce((s, x) => s + x.f.fileSize, 0))} على القرص`} tone="muted" percent={p?.total ? Math.min(100, ((p.uploadedFiles) / p.total) * 100) : 0} />
       </div>
 
       <div className="mt-7 mb-3">
@@ -142,7 +141,7 @@ export function DashboardPage({ onNavigate }: { onNavigate: (t: NavTarget) => vo
             <h3 className="text-sm font-extrabold">أدلة ونماذج استرشادية</h3>
             <ul className="mt-2 space-y-1.5 text-[12px] font-bold">
               <li><button onClick={() => onNavigate({ page: 'about' })} className="flex w-full items-center gap-2 rounded-lg bg-paper px-3 py-2 text-ink hover:bg-lavender"><BookOpen size={13} className="text-primary" /> الدليل الإجرائي والأهداف والمتطلبات</button></li>
-              <li><button onClick={() => onNavigate({ page: 'report' })} className="flex w-full items-center gap-2 rounded-lg bg-paper px-3 py-2 text-ink hover:bg-lavender"><Layers3 size={13} className="text-primary" /> قائمة الشواهد الـ{(p?.total ?? 0) + excludedCount} مع المتطلبات</button></li>
+              <li><button onClick={() => onNavigate({ page: 'report' })} className="flex w-full items-center gap-2 rounded-lg bg-paper px-3 py-2 text-ink hover:bg-lavender"><Layers3 size={13} className="text-primary" /> قائمة الشواهد الـ{p?.total ?? 0} مع المتطلبات</button></li>
               <li><button onClick={() => window.api.app.openDataDir()} className="flex w-full items-center gap-2 rounded-lg bg-paper px-3 py-2 text-ink hover:bg-lavender"><FolderOpen size={13} className="text-primary" /> فتح مجلد البيانات على الجهاز</button></li>
             </ul>
           </Card>

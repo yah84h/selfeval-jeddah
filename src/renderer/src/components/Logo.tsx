@@ -1,6 +1,7 @@
-// شعار التطبيق (رسم SVG مضمّن — يعمل دون إنترنت). ضع شعار الجهة الرسمي في assets/logo.png واستبدله هنا عند الحاجة.
-import logoUrl from '@/assets/logo.svg'
+// شعار وزارة التعليم (مضمّن محليًا — يعمل دون إنترنت)
+import logoUrl from '@/assets/moe-logo.png'
 
-export function Logo({ size = 40 }: { size?: number }) {
-  return <img src={logoUrl} width={size} height={size} alt="دليل التقويم المدرسي" className="shrink-0 rounded-xl" />
+export function Logo({ size = 40, className = '' }: { size?: number; className?: string }) {
+  // الشعار عريض؛ size يحدد الارتفاع
+  return <img src={logoUrl} height={size} style={{ height: size, width: 'auto' }} alt="وزارة التعليم" className={`shrink-0 ${className}`} />
 }

@@ -69,7 +69,7 @@ export function ReportPage() {
               <div>وزارة التعليم</div><div>الإدارة العامة للتعليم بمحافظة جدة</div><div>إدارة الجودة والاعتماد المدرسي</div>
             </div>
             <div className="text-center">
-              <div className="mx-auto w-fit"><Logo size={44} /></div>
+              <div className="mx-auto w-fit"><Logo size={56} /></div>
               <h1 className="mt-2 text-lg font-extrabold text-primary">تقرير جاهزية وشواهد التقويم المدرسي</h1>
               <p className="text-[11px] text-muted">مطابق لمعايير هيئة تقويم التعليم والتدريب (الإصدار المحلي v{info.data?.version})</p>
             </div>
