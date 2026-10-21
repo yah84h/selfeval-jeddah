@@ -51,4 +51,4 @@ publish:
   provider: github
   owner: yah84h # ← غيّره إلى اسم حسابك/منظمتك على GitHub
   repo: selfeval-jeddah # ← اسم المستودع
-  releaseType: release
+  releaseType: draft

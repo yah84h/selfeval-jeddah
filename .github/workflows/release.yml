@@ -4,7 +4,7 @@ name: Release
 
 on:
   push:
-    tags: ['v*.*.*']
+    tags: ["v*.*.*"]
   workflow_dispatch:
 
 permissions:
@@ -24,6 +24,7 @@ jobs:
   build:
     needs: test
     strategy:
+      max-parallel: 1
       fail-fast: false
       matrix:
         include:
